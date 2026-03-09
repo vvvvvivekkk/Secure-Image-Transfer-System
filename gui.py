@@ -469,7 +469,12 @@ class SecureImageTransferGUI:
         def task() -> None:
             try:
                 self._set_status("Checking email for encrypted attachments...", 30)
-                attachments = download_encrypted_files(user, pwd)
+                attachments = download_encrypted_files(
+                    user,
+                    pwd,
+                    max_messages=100,
+                    timeout_seconds=30,
+                )
                 if not attachments:
                     self._set_status("No encrypted attachments found.", 0)
                     messagebox.showinfo("No Files", "No .enc attachments were found in your inbox.")

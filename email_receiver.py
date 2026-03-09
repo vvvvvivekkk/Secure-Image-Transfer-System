@@ -47,6 +47,8 @@ def download_encrypted_files(
     imap_server: str = "imap.gmail.com",
     mailbox: str = "INBOX",
     download_dir: str = "downloads",
+    max_messages: int = 100,
+    timeout_seconds: int = 30,
 ) -> List[Tuple[str, str]]:
     """
     Connect to an IMAP server and download `.enc` attachments from the mailbox.
@@ -55,7 +57,12 @@ def download_encrypted_files(
     """
     os.makedirs(download_dir, exist_ok=True)
 
-    mail = imaplib.IMAP4_SSL(imap_server)
+    # Use a bounded timeout so the GUI does not appear to hang indefinitely.
+    try:
+        mail = imaplib.IMAP4_SSL(imap_server, timeout=timeout_seconds)
+    except TypeError:
+        # Backward compatibility for Python builds without timeout parameter.
+        mail = imaplib.IMAP4_SSL(imap_server)
     try:
         mail.login(user_email, password)
         status, _ = mail.select(mailbox)
@@ -66,9 +73,15 @@ def download_encrypted_files(
         if status != "OK":
             raise RuntimeError("Failed to search mailbox.")
 
+        message_ids = data[0].split()
+        if max_messages > 0:
+            # Only scan newest messages to keep download checks responsive.
+            message_ids = message_ids[-max_messages:]
+
         attachments_info: List[Tuple[str, str]] = []
 
-        for num in data[0].split():
+        # Iterate newest-first so recent attachments are found quickly.
+        for num in reversed(message_ids):
             status, msg_data = mail.fetch(num, "(RFC822)")
             if status != "OK":
                 continue
