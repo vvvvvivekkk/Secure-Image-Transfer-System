@@ -1,236 +1,318 @@
-## Secure Image Transfer System using AES Encryption and Email
+🔐 Secure Image Transfer System
+AES-256 Encryption + Email Transmission
 
-A desktop application written in Python that encrypts image files with AES‑256 before sending them via email, and decrypts received encrypted images locally. The GUI is built with `tkinter` and is designed to be clean, dark-themed, and user friendly.
+A Python desktop application that securely encrypts image files using AES-256 encryption before sending them via email. The receiver can download the encrypted file and decrypt it locally using the correct secret key.
 
----
+The application features a modern dark-mode GUI built with Tkinter and ensures lossless image recovery after decryption.
 
-### Features
+🚀 Features
 
-- **AES‑256 image encryption** (CBC mode with PKCS7 padding)
-- **Lossless image handling** by encrypting raw file bytes
-- **Email sending** of encrypted `.enc` files via SMTP over SSL
-- **Email receiving** of encrypted `.enc` attachments via IMAP
-- **Key management** using SHA‑256 (password → 256‑bit key)
-- **Modern dark-mode GUI** using `tkinter` and `ttk`
-- **Status bar and progress indication**
-- **Key generation and copy-to-clipboard**
+🔒 AES-256 Image Encryption
+Encrypts image files using AES-256 (CBC mode) with secure PKCS7 padding.
 
----
+🖼️ Lossless Image Handling
+Encrypts raw image bytes, ensuring no quality loss after decryption.
 
-### Project Structure
+📧 Secure Email Sending
+Send encrypted .enc files via SMTP over SSL.
 
-```text
+📥 Email Receiving Support
+Download encrypted .enc attachments using IMAP email access.
+
+🔑 Secure Key Management
+User passwords are converted to 256-bit encryption keys using SHA-256 hashing.
+
+🌙 Modern Dark-Mode GUI
+Clean and intuitive interface built with Tkinter + ttk styles.
+
+📊 Status & Progress Indicators
+Displays encryption status and email transfer messages.
+
+📋 Key Generation + Clipboard Support
+Generate secure keys and copy them instantly.
+
+📂 Project Structure
 secure-image-transfer/
-├── main.py                # Application entry point
-├── gui.py                 # Tkinter GUI
-├── encryptor.py           # AES encryption logic
-├── decryptor.py           # AES decryption wrapper
-├── email_sender.py        # SMTP email sending
-├── email_receiver.py      # IMAP email receiving
-├── key_manager.py         # Key generation and SHA‑256 hashing
-├── utils.py               # Logging, image validation helpers
-├── requirements.txt       # Python dependencies
-└── README.md              # This file
-```
+│
+├── main.py                # 🚀 Application entry point
+├── gui.py                 # 🖥️ Tkinter graphical interface
+├── encryptor.py           # 🔐 AES encryption logic
+├── decryptor.py           # 🔓 AES decryption logic
+├── email_sender.py        # 📤 SMTP email sending
+├── email_receiver.py      # 📥 IMAP email receiving
+├── key_manager.py         # 🔑 Key generation & hashing
+├── utils.py               # 🧰 Logging and validation helpers
+├── requirements.txt       # 📦 Python dependencies
+└── README.md              # 📘 Project documentation
+⚙️ Installation
+1️⃣ Clone or Download the Project
 
----
+Download or clone the repository.
 
-### Installation
+git clone https://github.com/vvvvvivekkk/Secure-Image-Transfer-System.git
 
-1. **Clone or copy the project**
+Move into the project folder:
 
-   Place the project folder (e.g. `secure-image-transfer`) on your machine.
+cd Secure-Image-Transfer-System
+2️⃣ Create a Virtual Environment (Recommended)
+python -m venv venv
 
-2. **Create and activate a virtual environment (recommended)**
+Activate it:
 
-   ```bash
-   cd secure-image-transfer
-   python -m venv venv
-   venv\Scripts\activate  # On Windows
-   # source venv/bin/activate  # On macOS/Linux
-   ```
+Windows
+venv\Scripts\activate
+macOS / Linux
+source venv/bin/activate
+3️⃣ Install Required Libraries
+pip install -r requirements.txt
+4️⃣ Create .env Configuration File
 
-3. **Install dependencies**
+Copy the example configuration:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+Windows
+copy .env.example .env
+macOS / Linux
+cp .env.example .env
 
-4. **Create your `.env` file**
+Edit .env and add your email details:
 
-  A sample file is included as `.env.example`.
+SENDER_EMAIL=your_email@gmail.com
+SENDER_APP_PASSWORD=your_16_char_app_password
+RECEIVER_EMAIL=receiver@example.com
+📧 Email Configuration
 
-  ```bash
-  copy .env.example .env   # Windows
-  # cp .env.example .env   # macOS/Linux
-  ```
+The system uses:
 
-  Then set your actual values in `.env`:
+Service	Server	Port
+SMTP	smtp.gmail.com	465
+IMAP	imap.gmail.com	Default
+🔑 Gmail Users (Important)
 
-  ```env
-  SENDER_EMAIL=your_email@gmail.com
-  SENDER_APP_PASSWORD=your_16_char_app_password
-  RECEIVER_EMAIL=receiver@example.com   # optional
-  ```
+To use Gmail you must:
 
----
+1️⃣ Enable 2-Step Verification
 
-### Email Provider Notes
+👉 https://myaccount.google.com/security
 
-The app uses:
+2️⃣ Generate an App Password
 
-- `smtp.gmail.com:465` (SMTP over SSL) for sending
-- `imap.gmail.com` for receiving
+👉 https://myaccount.google.com/apppasswords
 
-For Gmail you typically must:
+Use that password inside the application.
 
-- Enable **2‑step verification** on your Google account.
-- Create an **App Password** and use that in the app instead of your normal password.
+▶️ Running the Application
 
-For other providers, you may need to adapt server settings in `email_sender.send_email` and `email_receiver.download_encrypted_files` (SMTP/IMAP hostnames and ports).
+Activate the virtual environment and run:
 
----
+python main.py
 
-### Running the Application
+The Secure Image Transfer System GUI will open.
 
-1. Ensure your virtual environment is activated and dependencies installed.
-2. From the project root, run:
+🧑‍💻 How to Use the Application
+1️⃣ Select Image
 
-   ```bash
-   python main.py
-   ```
+Click:
 
-3. The **Secure Image Transfer System** window will open.
+Select Image
 
----
+Supported formats:
 
-### Using the Application
+PNG
+JPG
+JPEG
+BMP
+GIF
+TIFF
 
-#### 1. Select Image
+The app validates the image automatically.
 
-- Click **"Select Image..."**.
-- Choose any supported image (`.png`, `.jpg`, `.jpeg`, `.bmp`, `.gif`, `.tiff`).
-- The app validates the file using Pillow. Invalid files are rejected.
+2️⃣ Set or Generate Secret Key
 
-#### 2. Set or Generate Secret Key
+You can either:
 
-- In **"Secret Key"**:
-  - Enter a passphrase manually, or
-  - Click **"Generate Strong Key"** to create a random 256‑bit key (base64 encoded).
-- You can click **"Copy Key"** to place the current key into your clipboard.
-- Internally, whatever you type is converted to a 256‑bit AES key using SHA‑256.
+✏️ Enter your own passphrase
 
-#### 3. Encrypt the Image
+OR
 
-- Click **"Encrypt Selected Image"**.
-- The app:
-  - Reads the image file bytes.
-  - Derives an AES‑256 key from your passphrase.
-  - Generates a random IV.
-  - Encrypts using AES‑CBC and writes `IV + ciphertext` to a `.enc` file next to the original image.
-- On success you will see a confirmation dialog and the path to the encrypted file.
+🔑 Click Generate Strong Key
 
-> The original image remains untouched; only the `.enc` file is sent/stored.
+You can also press Copy Key to copy it to the clipboard.
 
-#### 4. Configure Email
+Internally:
 
-- In **"Email Settings"**:
-  - `Sender Email`: your email address (e.g. Gmail).
-  - `Sender Password / App Password`: your email password or app password.
-  - `Receiver Email`: the destination email address.
-- You can toggle password visibility via the **"Show"** button.
-- Click **"Save Email Settings (.env)"** to store these values for next launch.
-- On startup, the app automatically loads saved email settings from `.env`.
-- `Receiver Email` is optional in `.env` and can be changed any time before sending.
+password → SHA256 → AES-256 key
+3️⃣ Encrypt the Image
 
-#### 5. Send Encrypted Image via Email
+Click:
 
-- After encrypting an image, click **"Send Encrypted Image via Email"**.
-- The app attaches the `.enc` file and sends it using SMTP over SSL.
-- On failure (authentication, network, etc.) a descriptive error dialog is shown.
+Encrypt Selected Image
 
-#### 6. Check Email & Download `.enc` Files
+The application will:
 
-- Provide the **email** and **password / app password** under **"Email Settings"**.
-- Click **"Check Email & Download .enc Files"**.
-- The app:
-  - Connects to IMAP (`imap.gmail.com` by default).
-  - Scans the `INBOX` for emails with `.enc` attachments.
-  - Downloads these attachments into a `downloads/` directory.
-- A dialog lists the downloaded filenames and locations.
+1️⃣ Read image bytes
+2️⃣ Generate a random IV
+3️⃣ Encrypt using AES-256
+4️⃣ Save encrypted file
 
-#### 7. Decrypt an Encrypted File
+Output example:
 
-- Click **"Decrypt Encrypted File"**.
-- Choose a `.enc` file (e.g. from `downloads/`).
-- Choose a save location and image filename for the decrypted output.
-- The app:
-  - Uses your current secret key (same passphrase used at encryption time).
-  - Decrypts the file, removes padding, and writes the original bytes.
-- If the key is incorrect or the file is corrupted, you get a clear error message.
+photo.jpg.enc
 
-> Because encryption is done at the raw-byte level, decrypted images are bit‑for‑bit identical to the originals as long as the correct key is used and the file is not corrupted.
+⚠️ The original image remains untouched.
 
----
+4️⃣ Configure Email
 
-### Security Details
+Fill the following fields:
 
-- **Algorithm**: AES‑256 in **CBC** mode.
-- **Key size**: 256 bits.
-- **Key derivation**: SHA‑256 hash of the provided password/passphrase.
-- **IV**: 16‑byte random IV generated for **each encryption**, stored at the start of the `.enc` file.
-- **Padding**: PKCS7 on plaintext before encryption.
-- **Image integrity**: Encryption operates on the original file bytes so no recompression or quality loss occurs.
+📧 Sender Email
 
-Keep your passphrase/key secure and share it with recipients via a separate communication channel (not in the same email as the encrypted file).
+your_email@gmail.com
 
----
+🔐 App Password
 
-### Error Handling
+gmail_app_password
 
-The application gracefully handles:
+📨 Receiver Email
 
-- Missing or invalid image files.
-- Incorrect decryption keys (via padding verification errors).
-- Email authentication failures.
-- Network or connection errors to SMTP/IMAP servers.
-- Missing or malformed attachments when receiving.
+friend@example.com
 
-User-friendly dialogs provide clear descriptions of what went wrong and how to fix it (e.g. "The key may be incorrect or the file is corrupted").
+You can toggle password visibility with the Show button.
 
----
+Press:
 
-### Development Notes
+Save Email Settings
 
-- **Encryption / Decryption**
-  - Core logic lives in `encryptor.py` and is reused by `decryptor.py`.
-  - The same PKCS7 logic and IV layout is used both ways to guarantee compatibility.
+The values will be saved inside .env.
 
-- **GUI**
-  - Implemented in `gui.py` with a dark, card-based layout using `ttk` styles.
-  - Long-running tasks (encryption, sending, IMAP checks, decryption) run in background threads so the UI remains responsive.
+5️⃣ Send Encrypted Image
 
-- **Logging**
-  - `utils.setup_logging()` configures logging to both a file (`secure_image_transfer.log`) and the console.
-  - You can adjust the log level or extend logging as needed.
+Click:
 
----
+Send Encrypted Image via Email
 
-### Running Tests / Verifying Round-Trip
+The application will:
 
-To verify that encryption and decryption are lossless:
+📎 Attach the .enc file
+📤 Send it via SMTP SSL
 
-1. Pick an image `example.png`.
-2. In the app:
-   - Select the image.
-   - Set a key (e.g. `my-test-key`).
-   - Encrypt it.
-3. Using a Python shell, compare the original and decrypted files:
+Errors such as authentication failure or network issues are handled automatically.
 
-   ```python
-   with open("example.png", "rb") as f1, open("example.png.dec", "rb") as f2:
-       print(f1.read() == f2.read())  # should print True
-   ```
+6️⃣ Receive Encrypted Files
 
-If they match, the system preserves image bytes perfectly.
+Click:
 
+Check Email & Download Files
+
+The system will:
+
+1️⃣ Connect to IMAP
+2️⃣ Search inbox for .enc files
+3️⃣ Download attachments
+
+Files will be saved to:
+
+downloads/
+7️⃣ Decrypt the Image
+
+Click:
+
+Decrypt Encrypted File
+
+Select the .enc file and provide the same secret key used during encryption.
+
+The system will restore the original image.
+
+Example output:
+
+photo_decrypted.jpg
+🔐 Security Details
+Feature	Description
+Encryption Algorithm	AES-256
+Mode	CBC
+Key Derivation	SHA-256
+IV	Random 16-byte IV
+Padding	PKCS7
+
+Encryption is performed on raw file bytes, ensuring bit-perfect recovery.
+
+⚠️ Always share your secret key through a different communication channel.
+
+⚠️ Error Handling
+
+The application safely handles:
+
+❌ Invalid image files
+❌ Incorrect decryption keys
+❌ Email authentication failures
+❌ Network connectivity issues
+❌ Missing attachments
+
+Clear and user-friendly error messages are displayed.
+
+🧠 Development Notes
+Encryption & Decryption
+
+Core encryption logic is implemented in:
+
+encryptor.py
+decryptor.py
+
+Both modules share the same AES + padding implementation.
+
+GUI
+
+The GUI is built using:
+
+tkinter
+ttk
+
+Features:
+
+Dark theme
+
+Card layout
+
+Background threads for heavy tasks
+
+Responsive interface
+
+Logging
+
+Logs are written to:
+
+secure_image_transfer.log
+
+This helps with debugging and monitoring application behavior.
+
+🧪 Verify Encryption Integrity
+
+To confirm lossless encryption, run this test:
+
+with open("example.png", "rb") as f1, open("example.png.dec", "rb") as f2:
+    print(f1.read() == f2.read())
+
+Output should be:
+
+True
+
+This confirms the decrypted image is identical to the original.
+
+⭐ Future Improvements
+
+Possible enhancements:
+
+🔐 Hybrid Encryption (AES + RSA)
+
+☁️ Cloud storage support
+
+📱 Mobile app version
+
+📊 File transfer history dashboard
+
+🔑 Automatic key exchange
+
+👨‍💻 Author
+
+Vivek Reddy
+
+Cybersecurity & AI enthusiast building secure systems with Python.
