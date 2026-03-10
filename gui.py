@@ -1,7 +1,7 @@
 import os
 import threading
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, simpledialog
 
 from decryptor import decrypt_image
 from email_receiver import download_encrypted_files
@@ -466,12 +466,23 @@ class SecureImageTransferGUI:
             )
             return
 
+        default_download_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
+        chosen_download_dir = filedialog.askdirectory(
+            title="Select Folder to Save Downloaded .enc Files",
+            initialdir=default_download_dir,
+            mustexist=True,
+        )
+        if not chosen_download_dir:
+            self._set_status("Download cancelled.", 0)
+            return
+
         def task() -> None:
             try:
                 self._set_status("Checking email for encrypted attachments...", 30)
                 attachments = download_encrypted_files(
                     user,
                     pwd,
+                    download_dir=chosen_download_dir,
                     max_messages=100,
                     timeout_seconds=30,
                 )
@@ -491,9 +502,21 @@ class SecureImageTransferGUI:
         threading.Thread(target=task, daemon=True).start()
 
     def on_decrypt_image(self) -> None:
-        key = self._get_aes_key()
-        if key is None:
+        secret = simpledialog.askstring(
+            "Secret Code Required",
+            "Enter secret code to decrypt this .enc file:",
+            show="•",
+            parent=self.root,
+        )
+        if secret is None:
+            self._set_status("Decryption cancelled.", 0)
             return
+        secret = secret.strip()
+        if not secret:
+            messagebox.showerror("Missing Secret Code", "Please enter a secret code to decrypt.")
+            return
+
+        key = hash_key(secret)
 
         enc_path = filedialog.askopenfilename(
             title="Select Encrypted File (.enc)",
