@@ -1,4 +1,5 @@
 import os
+import shutil
 import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
@@ -408,9 +409,28 @@ class SecureImageTransferGUI:
             try:
                 self._set_status("Encrypting image...", 20)
                 enc_path = encrypt_image(self.selected_image_path, key)
-                self.encrypted_file_path = enc_path
+
+                downloads_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
+                os.makedirs(downloads_dir, exist_ok=True)
+
+                target_path = os.path.join(downloads_dir, os.path.basename(enc_path))
+                base, ext = os.path.splitext(target_path)
+                counter = 1
+                while os.path.exists(target_path):
+                    target_path = f"{base}_{counter}{ext}"
+                    counter += 1
+
+                shutil.copy2(enc_path, target_path)
+
+                # Use the downloads copy for later actions (for example, email send).
+                self.encrypted_file_path = target_path
                 self._set_status("Image encrypted successfully.", 100)
-                messagebox.showinfo("Success", f"Encrypted file created:\n{enc_path}")
+                messagebox.showinfo(
+                    "Success",
+                    "Encrypted files created:\n"
+                    f"1) {enc_path}\n"
+                    f"2) {target_path}",
+                )
             except Exception as exc:
                 self._set_status("Encryption failed.", 0)
                 messagebox.showerror("Encryption Error", str(exc))
