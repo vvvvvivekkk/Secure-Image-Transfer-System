@@ -298,20 +298,13 @@ class SecureImageTransferGUI:
         )
         send_btn.grid(row=3, column=0, sticky="we", pady=4, columnspan=2)
 
-        download_btn = ttk.Button(
-            card,
-            text="Check Email & Download .enc Files",
-            command=self.on_check_email,
-        )
-        download_btn.grid(row=4, column=0, sticky="we", pady=4, columnspan=2)
-
         decrypt_btn = ttk.Button(
             card,
             text="Decrypt Encrypted File",
             style="Accent.TButton",
             command=self.on_decrypt_image,
         )
-        decrypt_btn.grid(row=5, column=0, sticky="we", pady=(12, 0), columnspan=2)
+        decrypt_btn.grid(row=4, column=0, sticky="we", pady=(12, 0), columnspan=2)
 
         card.rowconfigure(6, weight=1)
         card.columnconfigure(0, weight=1)
