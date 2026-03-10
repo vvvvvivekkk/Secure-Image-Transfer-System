@@ -6,6 +6,28 @@ from email.message import Message
 from typing import List, Tuple
 
 
+def _default_download_dir() -> str:
+    # Keep downloads inside the project folder regardless of process cwd.
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
+
+
+def _build_mailbox_candidates(preferred_mailbox: str) -> list[str]:
+    candidates: list[str] = []
+
+    def add(name: str) -> None:
+        normalized = name.strip()
+        if normalized and normalized not in candidates:
+            candidates.append(normalized)
+
+    add(preferred_mailbox)
+    add("INBOX")
+    add("[Gmail]/All Mail")
+    add("[Gmail]/Sent Mail")
+    add("Sent")
+    add("Sent Items")
+    return candidates
+
+
 def _decode_mime_filename(filename: str | None) -> str:
     if not filename:
         return ""
@@ -40,13 +62,12 @@ def _get_candidate_filename(part: Message) -> str:
 
     return ""
 
-
 def download_encrypted_files(
     user_email: str,
     password: str,
     imap_server: str = "imap.gmail.com",
     mailbox: str = "INBOX",
-    download_dir: str = "downloads",
+    download_dir: str | None = None,
     max_messages: int = 100,
     timeout_seconds: int = 30,
 ) -> List[Tuple[str, str]]:
@@ -55,7 +76,8 @@ def download_encrypted_files(
 
     Returns a list of tuples: (attachment_filename, saved_path).
     """
-    os.makedirs(download_dir, exist_ok=True)
+    resolved_download_dir = download_dir or _default_download_dir()
+    os.makedirs(resolved_download_dir, exist_ok=True)
 
     # Use a bounded timeout so the GUI does not appear to hang indefinitely.
     try:
@@ -65,59 +87,65 @@ def download_encrypted_files(
         mail = imaplib.IMAP4_SSL(imap_server)
     try:
         mail.login(user_email, password)
-        status, _ = mail.select(mailbox)
-        if status != "OK":
-            raise RuntimeError(f"Unable to select mailbox {mailbox}.")
-
-        status, data = mail.search(None, "ALL")
-        if status != "OK":
-            raise RuntimeError("Failed to search mailbox.")
-
-        message_ids = data[0].split()
-        if max_messages > 0:
-            # Only scan newest messages to keep download checks responsive.
-            message_ids = message_ids[-max_messages:]
-
         attachments_info: List[Tuple[str, str]] = []
 
-        # Iterate newest-first so recent attachments are found quickly.
-        for num in reversed(message_ids):
-            status, msg_data = mail.fetch(num, "(RFC822)")
+        seen_message_ids: set[bytes] = set()
+        for candidate_mailbox in _build_mailbox_candidates(mailbox):
+            status, _ = mail.select(candidate_mailbox)
             if status != "OK":
                 continue
 
-            raw_email = _extract_rfc822_bytes(msg_data)
-            if raw_email is None:
+            status, data = mail.search(None, "ALL")
+            if status != "OK" or not data or not data[0]:
                 continue
 
-            msg = email.message_from_bytes(raw_email)
+            message_ids = data[0].split()
+            if max_messages > 0:
+                # Only scan newest messages to keep download checks responsive.
+                message_ids = message_ids[-max_messages:]
 
-            for part in msg.walk():
-                if part.is_multipart():
+            # Iterate newest-first so recent attachments are found quickly.
+            for num in reversed(message_ids):
+                if num in seen_message_ids:
+                    continue
+                seen_message_ids.add(num)
+
+                status, msg_data = mail.fetch(num, "(RFC822)")
+                if status != "OK":
                     continue
 
-                filename = _get_candidate_filename(part)
-                if not filename or not filename.lower().endswith(".enc"):
+                raw_email = _extract_rfc822_bytes(msg_data)
+                if raw_email is None:
                     continue
 
-                payload = part.get_payload(decode=True)
-                if payload is None:
-                    continue
+                msg = email.message_from_bytes(raw_email)
 
-                safe_name = os.path.basename(filename)
-                save_path = os.path.join(download_dir, safe_name)
+                for part in msg.walk():
+                    if part.is_multipart():
+                        continue
 
-                # Avoid overwriting existing files by appending a counter.
-                base, ext = os.path.splitext(save_path)
-                counter = 1
-                while os.path.exists(save_path):
-                    save_path = f"{base}_{counter}{ext}"
-                    counter += 1
+                    filename = _get_candidate_filename(part)
+                    if not filename or not filename.lower().endswith(".enc"):
+                        continue
 
-                with open(save_path, "wb") as f:
-                    f.write(payload)
+                    payload = part.get_payload(decode=True)
+                    if payload is None:
+                        continue
 
-                attachments_info.append((safe_name, save_path))
+                    safe_name = os.path.basename(filename)
+                    save_path = os.path.join(resolved_download_dir, safe_name)
+
+                    # Avoid overwriting existing files by appending a counter.
+                    base, ext = os.path.splitext(save_path)
+                    counter = 1
+                    while os.path.exists(save_path):
+                        save_path = f"{base}_{counter}{ext}"
+                        counter += 1
+
+                    with open(save_path, "wb") as f:
+                        f.write(payload)
+
+                    attachments_info.append((safe_name, save_path))
 
         return attachments_info
     finally:

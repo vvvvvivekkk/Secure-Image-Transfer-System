@@ -503,13 +503,15 @@ class SecureImageTransferGUI:
             return
 
         default_output = os.path.splitext(enc_path)[0]
+        suggested_ext = os.path.splitext(default_output)[1].lower() or ".png"
         out_path = filedialog.asksaveasfilename(
             title="Save Decrypted Image As",
             initialfile=os.path.basename(default_output),
-            defaultextension=".png",
+            defaultextension=suggested_ext,
             filetypes=[
+                ("Original Image Type", f"*{suggested_ext}"),
                 ("PNG Image", "*.png"),
-                ("JPEG Image", "*.jpg;*.jpeg"),
+                ("JPEG Image", "*.jpg *.jpeg"),
                 ("All Files", "*.*"),
             ],
         )
@@ -519,9 +521,9 @@ class SecureImageTransferGUI:
         def task() -> None:
             try:
                 self._set_status("Decrypting image...", 50)
-                decrypt_image(enc_path, key, out_path)
+                saved_path = decrypt_image(enc_path, key, out_path)
                 self._set_status("Image decrypted successfully.", 100)
-                messagebox.showinfo("Success", f"Decrypted image saved to:\n{out_path}")
+                messagebox.showinfo("Success", f"Decrypted image saved to:\n{saved_path}")
             except ValueError as exc:
                 # Likely padding / key mismatch
                 self._set_status("Decryption failed.", 0)
