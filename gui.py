@@ -450,15 +450,30 @@ class SecureImageTransferGUI:
         sender = self.sender_email_var.get().strip()
         pwd = self.sender_pwd_var.get().strip()
         receiver = self.receiver_email_var.get().strip()
+        encryption_key = self.key_var.get().strip()
 
         if not sender or not pwd or not receiver:
             messagebox.showerror("Missing Fields", "Please provide sender email, password, and receiver email.")
             return
 
+        if not encryption_key:
+            messagebox.showerror(
+                "Missing Key",
+                "The encryption key field is empty.\n"
+                "The key is included in the email so the receiver can decrypt the file.",
+            )
+            return
+
         def task() -> None:
             try:
                 self._set_status("Sending email with encrypted attachment...", 40)
-                send_email(sender, pwd, receiver, self.encrypted_file_path)
+                send_email(
+                    sender,
+                    pwd,
+                    receiver,
+                    self.encrypted_file_path,
+                    encryption_password=encryption_key,
+                )
                 self._set_status("Encrypted image sent successfully.", 100)
                 messagebox.showinfo("Email Sent", "Encrypted image email was sent successfully.")
             except Exception as exc:
@@ -515,18 +530,26 @@ class SecureImageTransferGUI:
         threading.Thread(target=task, daemon=True).start()
 
     def on_decrypt_image(self) -> None:
-        secret = simpledialog.askstring(
-            "Secret Code Required",
-            "Enter secret code to decrypt this .enc file:",
-            show="•",
-            parent=self.root,
-        )
-        if secret is None:
-            self._set_status("Decryption cancelled.", 0)
-            return
-        secret = secret.strip()
+        # Use the same key field as encryption for consistency.
+        # If the key field is empty, fall back to a popup dialog.
+        secret = self.key_var.get().strip()
         if not secret:
-            messagebox.showerror("Missing Secret Code", "Please enter a secret code to decrypt.")
+            secret = simpledialog.askstring(
+                "Secret Key Required",
+                "The key field is empty.\n"
+                "Enter the same key / passphrase used to encrypt the file:",
+                show="•",
+                parent=self.root,
+            )
+            if secret is None:
+                self._set_status("Decryption cancelled.", 0)
+                return
+            secret = secret.strip()
+        if not secret:
+            messagebox.showerror(
+                "Missing Key",
+                "Please enter the same key / passphrase that was used during encryption.",
+            )
             return
 
         key = hash_key(secret)
