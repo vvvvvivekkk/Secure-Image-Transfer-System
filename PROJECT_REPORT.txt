@@ -1,0 +1,426 @@
+PROJECT REPORT ON
+SECURE IMAGE TRANSFER SYSTEM USING AES-256 ENCRYPTION
+Submitted by
+MADHU [Your Roll Number]
+Under the Supervision of
+UPENDRA
+Senior Security Analyst
+KRISHNA
+Security Analyst
+Registered And Head Office
+D.NO: 11-9-18, 1st Floor,
+Majjivari Street, Kothapeta,
+Vijayawada - 520001.
++91 9550055338 / +91 7901336873
+contact@suprajatechnologies.com
+Table of Contents
+1. Introduction
+ 1.1 Overall Description
+2. Existing System
+3. Proposed System
+4. System Design
+ 4.1 Feasibility Study
+  4.1.1 Economical Feasibility
+  4.1.2 Technical Feasibility
+  4.1.3 Social Feasibility
+ 4.2 Input and Output Design
+  4.2.1 Input Design
+  4.2.2 Objectives
+  4.2.3 Output Design
+5. Implementation
+ 5.1 Module Description
+  5.1.1 AES-256 Encryption Module
+  5.1.2 AES-256 Decryption Module
+  5.1.3 Key Generation and Management
+  5.1.4 Email Sending Module (SMTP)
+  5.1.5 Email Receiving Module (IMAP)
+  5.1.6 GUI Module (Tkinter)
+  5.1.7 Environment Configuration Module
+  5.1.8 Utility and Validation Module
+ 5.2 System Architecture
+6. Algorithm Implementation
+ 6.1 AES-256 Algorithm (CBC Mode)
+ 6.2 SHA-256 Key Derivation
+ 6.3 PKCS7 Padding
+7. System Design Diagrams
+ 7.1 Data Flow Diagram
+ 7.2 Use-Case Diagram
+ 7.3 Class Diagram
+ 7.4 Sequence Diagram
+ 7.5 Activity Diagram
+ 7.6 Component Diagram
+ 7.7 ER Diagram
+8. Requirement Specification
+ 8.1 Functional Requirements
+ 8.2 Software Requirements
+ 8.3 Operating Systems Supported
+ 8.4 Technologies and Languages Used
+ 8.5 Hardware Requirements
+9. System Testing
+ 9.1 Types of Testing
+  9.1.1 Unit Testing
+  9.1.2 Integration Testing
+  9.1.3 Functional Testing
+  9.1.4 System Testing
+  9.1.5 White Box Testing
+  9.1.6 Black Box Testing
+ 9.2 Test Strategy and Approach
+  9.2.1 Test Objectives
+  9.2.2 Features to be Tested
+ 9.3 Integration Testing
+  9.3.1 Test Results
+ 9.4 Acceptance Testing
+  9.4.1 Test Results
+ 9.5 Execution
+10. Conclusion
+1. Introduction
+1.1 Overall Description
+Secure image transfer plays a vital role in ensuring the confidentiality and integrity of digital visual
+data, especially in today's interconnected world where images are frequently shared across networks.
+With the increasing risk of interception, tampering, and unauthorized access during image transmission
+over email and other communication channels, protecting images from malicious actors is of critical
+importance. Advanced Encryption Standard (AES) with a 256-bit key provides one of the strongest
+symmetric encryption mechanisms available today, making it the ideal choice for securing image data.
+The main purpose of this project is to develop a Secure Image Transfer System — a Python-based
+desktop application that encrypts image files using AES-256 encryption in CBC (Cipher Block
+Chaining) mode before transmitting them securely via email. The system features a modern dark-mode
+graphical user interface built with Tkinter, complete with email sending (SMTP over SSL) and
+receiving (IMAP) capabilities. The receiver can download the encrypted .enc file from their email and
+decrypt it locally using the same secret key. This ensures that even if the email is intercepted during
+transit, the image data remains completely unreadable and protected. The project demonstrates how
+cryptography, combined with secure communication protocols, enhances end-to-end data privacy for
+image transfer.
+2. Existing System
+In the existing system, images are frequently shared via email and messaging platforms without any
+encryption or security measures. The image files travel in plaintext form, making them vulnerable to
+interception by man-in-the-middle attacks during network transmission. Some systems use basic or
+weak encryption techniques such as simple XOR-based pixel manipulation or Caesar cipher-like
+substitution methods, which can be easily broken using modern computational tools and brute-force
+attacks. Most systems do not implement proper key generation or derivation, relying on short or
+predictable passwords. Additionally, there is no integrated mechanism where encryption and email
+transmission happen in a single workflow — users must manually encrypt the file using one tool and
+then attach it to an email separately, leading to user errors and security gaps. Most existing tools lack a
+graphical interface, requiring command-line usage and providing no visual feedback on the encryption
+or decryption process. There is also no mechanism to ensure the image has not been corrupted or
+tampered with during the encryption-decryption cycle. Hence, the current systems fail to guarantee
+comprehensive data security, user convenience, and reliable end-to-end image protection.
+3. Proposed System
+The proposed Secure Image Transfer System overcomes all the drawbacks of the existing system by
+providing an integrated, end-to-end secure image transfer solution. It implements AES-256 encryption
+in CBC mode with a randomly generated 16-byte Initialization Vector (IV) for each encryption
+operation, ensuring that encrypting the same image twice produces entirely different ciphertexts.
+User-provided passwords are securely hashed using SHA-256, producing a deterministic 256-bit key
+suitable for AES-256 encryption. Users can also generate a cryptographically strong random key using
+the built-in key generator. The system implements PKCS7 padding to ensure that the image data aligns
+perfectly with the 16-byte AES block size requirement. The system encrypts raw image file bytes
+directly, not pixel values, ensuring bit-perfect recovery of the original image after decryption with zero
+quality loss. After encryption, the encrypted .enc file can be sent directly to a recipient via a secure
+SMTP SSL connection with the encryption key and decryption instructions included in a professionally
+formatted HTML email. The receiver can use the built-in email checker to connect to their inbox via
+IMAP, automatically search for and download .enc attachments. A clean, intuitive Tkinter-based
+graphical interface with a dark theme, card-based layout, progress indicators, and status messages
+ensures an excellent user experience. The system also features secure key generation, clipboard
+support, and comprehensive error handling. Thus, the proposed system provides a high level of data
+protection, reliability, convenience, and a complete end-to-end secure workflow for image transfer.
+4. System Design
+4.1 Feasibility Study
+4.1.1 Economical Feasibility
+The system is economically feasible since it is built entirely using open-source tools and libraries.
+Python is a free, open-source programming language. All cryptographic operations are performed using
+the pycryptodome library which is open-source. Image validation uses Pillow which is also
+open-source. The GUI is built with Tkinter, which is included in the standard Python distribution at no
+additional cost. Email functionality uses Python's built-in smtplib and imaplib modules. There are no
+licensing fees, subscription costs, or proprietary software dependencies, making the project extremely
+cost-effective.
+4.1.2 Technical Feasibility
+Python provides excellent native support for cryptographic operations, file handling, email protocols
+such as SMTP and IMAP, and GUI development. The pycryptodome library offers a robust,
+well-tested implementation of AES encryption. The Pillow library enables reliable image validation.
+The Tkinter framework, bundled with Python, provides all the necessary widgets for building a
+responsive desktop interface. The system requires no complex infrastructure and runs as a standalone
+desktop application. All technologies used are mature, widely supported, and well-documented, making
+the implementation technically sound and highly achievable.
+4.1.3 Social Feasibility
+This system promotes better data security practices among individuals and organizations by providing
+an easy-to-use tool for secure image sharing. In an era of increasing cyber threats, data breaches, and
+privacy concerns, this system empowers users to take control of their image data privacy without
+requiring deep technical knowledge of cryptography. It encourages the adoption of encryption best
+practices in everyday digital communication and ensures safe handling of sensitive visual assets.
+4.2 Input and Output Design
+4.2.1 Input Design
+Users select an image file through a file selection dialog. Supported formats include PNG, JPG, JPEG,
+BMP, GIF, TIFF, and WEBP. The image is validated using the Pillow library before processing. Users
+can either type a passphrase manually or click Generate Strong Key to create a cryptographically
+random 256-bit key. For email functionality, users provide their sender email address, Gmail App
+Password, and the receiver's email address.
+4.2.2 Objectives
+The input design aims to provide an intuitive, modern interface for selecting images and entering
+encryption keys. It validates all inputs before processing to prevent errors and allows users to save
+email configurations for repeated use.
+4.2.3 Output Design
+The output includes an encrypted binary file (.enc) containing the IV and ciphertext, a decrypted image
+restored to its original format, a professionally formatted HTML email sent to the receiver containing
+the encrypted file as an attachment along with decryption instructions, and real-time status updates with
+a progress bar displayed in the GUI.
+5. Implementation
+The implementation is carried out using Python 3 with the pycryptodome, Pillow, and Tkinter
+libraries. The AES-256 algorithm operates on the raw image file bytes, ensuring confidentiality and
+lossless recovery. The system follows a modular architecture with clear separation of concerns, where
+each module handles a specific responsibility. Modules are implemented for encryption, decryption,
+key generation, email sending, email receiving, GUI, environment configuration, and utility functions.
+5.1 Module Description
+5.1.1 AES-256 Encryption Module (encryptor.py)
+This is the core module responsible for encrypting and decrypting image files using AES-256 in CBC
+mode. The encrypt_image function reads raw image bytes, builds a plaintext payload with an embedded
+file extension header using magic bytes SITS1 plus extension metadata plus image data, generates a
+random 16-byte IV, applies PKCS7 padding, encrypts using AES-256-CBC, and writes the IV plus
+ciphertext to a .enc file. The decrypt_image function reads the encrypted file, extracts the IV which is
+the first 16 bytes and the ciphertext, decrypts using AES-256-CBC, removes PKCS7 padding, parses
+the embedded extension metadata, and writes the restored image bytes to the output file with the correct
+extension. It also implements both _pkcs7_pad and _pkcs7_unpad functions to ensure data alignment
+with the 16-byte AES block size.
+5.1.2 AES-256 Decryption Module (decryptor.py)
+This module provides the public decryption API. It delegates to the core decrypt_image function in
+encryptor.py to maintain centralized encryption and decryption logic. It automatically determines the
+output file path by stripping the .enc extension from the input filename.
+5.1.3 Key Generation and Management (key_manager.py)
+This module handles all key-related operations. The generate_key function generates a
+cryptographically strong 256-bit random key using os.urandom(32) and returns it as a URL-safe
+Base64-encoded string for easy copy and paste. The hash_key function derives a 256-bit AES key from
+a user-provided password string using SHA-256 hashing, producing exactly 32 bytes suitable for
+AES-256 encryption.
+5.1.4 Email Sending Module (email_sender.py)
+This module handles secure email transmission of encrypted image files using SMTP over SSL. It
+connects to the SMTP server on port 465 using SSL encryption. It constructs both a plain-text fallback
+and a beautifully formatted HTML email body containing the encrypted filename, the encryption
+password, file size information, step-by-step decryption instructions, and security warnings. The
+encrypted .enc file is attached as an application/octet-stream MIME type.
+5.1.5 Email Receiving Module (email_receiver.py)
+This module enables downloading encrypted attachments from email using IMAP. It connects to the
+IMAP server using SSL with configurable timeout. It searches multiple mailbox candidates including
+INBOX, All Mail, and Sent Mail for messages containing .enc attachments. It downloads .enc
+attachments to a user-specified directory, automatically handling filename conflicts by appending a
+counter. It properly decodes MIME-encoded filenames and handles various email encoding schemes.
+5.1.6 GUI Module (gui.py)
+This is the main graphical interface module built with Tkinter and ttk. It uses a custom dark color
+palette with the clam ttk theme. The interface is organized into four distinct cards: Image File Card for
+image selection with file validation, Secret Key Card for key entry, generation, and clipboard copy,
+Email Settings Card for sender and receiver email configuration with .env persistence, and Actions
+Card for encrypt, send, and decrypt operations. Heavy operations run in background threads to keep
+the GUI responsive. A progress bar and status label provide real-time feedback on ongoing operations.
+5.1.7 Environment Configuration Module (env_config.py)
+This module manages persistent email settings using a .env file. It handles loading by parsing the .env
+file with support for comments, quoted values, and whitespace. It handles saving by merging new
+settings with existing values and writing them back in a clean format. It manages SENDER_EMAIL,
+SENDER_APP_PASSWORD, and RECEIVER_EMAIL settings.
+5.1.8 Utility and Validation Module (utils.py)
+This module provides shared utility functions including logging setup that configures application-wide
+logging to both a file and the console, image validation using Pillow's Image.verify to validate that
+selected files are genuine readable images, directory management to ensure required directories exist,
+and resource path resolution for both source and PyInstaller-bundled environments.
+5.2 System Architecture
+The system architecture follows a layered modular design. The presentation layer consists of the
+Tkinter GUI with dark-mode themed cards. The application logic layer contains the encryption module,
+decryption module, email sender, email receiver, key manager, and environment configuration module.
+The utility layer provides logging, validation, and helper functions. The foundation layer uses external
+libraries including pycryptodome, Pillow, smtplib, imaplib, and standard OS modules. All modules
+interact securely, with the GUI layer coordinating operations between the encryption, email, and
+utility modules. Background threading ensures non-blocking execution of heavy tasks.
+6. Algorithm Implementation
+6.1 AES-256 Algorithm (CBC Mode)
+The Advanced Encryption Standard (AES) is a symmetric block cipher standardized by NIST. In this
+project, AES is used with a 256-bit key and operates in CBC (Cipher Block Chaining) mode. The key
+preparation step involves hashing the user's password using SHA-256 to produce a 32-byte key. A
+cryptographically random 16-byte Initialization Vector (IV) is generated for each encryption operation.
+The original image file extension is embedded in the plaintext payload using a custom header format
+with magic bytes. PKCS7 padding is applied to ensure the plaintext length is a multiple of 16 bytes.
+The AES cipher then encrypts the padded plaintext in CBC mode, where each plaintext block is XORed
+with the previous ciphertext block before encryption. The IV is prepended to the ciphertext and saved
+as a .enc file. AES-256 uses a block size of 128 bits, a key size of 256 bits, and performs 14 rounds of
+substitution, shift rows, mix columns, and add round key operations. AES-256 is considered
+computationally infeasible to break with current technology, as a brute-force attack would require 2
+raised to the power of 256 attempts. In this project, Python's pycryptodome library is used for the
+implementation. AES ensures that even small changes in input produce drastically different outputs,
+guaranteeing strong protection.
+6.2 SHA-256 Key Derivation
+SHA-256 (Secure Hash Algorithm 256-bit) is used to derive the AES encryption key from the user's
+password. The password string is first encoded to UTF-8 bytes, then hashed using SHA-256, producing
+exactly 32 bytes which serve as the 256-bit AES key. This ensures that any password of any length
+produces exactly 32 bytes, the same password always produces the same key, small changes in the
+password produce completely different keys due to the avalanche effect, and it is computationally
+infeasible to reverse the hash back to the password.
+6.3 PKCS7 Padding
+PKCS7 padding is applied to ensure the plaintext data aligns with the 16-byte AES block size. If the
+data is 13 bytes, 3 bytes of padding with value 0x03 are added. If the data is exactly 16 bytes, 16 bytes
+of padding with value 0x10 are added. During decryption, the padding is validated and removed to
+restore the original data exactly.
+7. System Design Diagrams
+7.1 Data Flow Diagram
+Shows the flow of data between modules. The user provides an image file and a secret key. The image
+is passed to the AES-256-CBC encryption engine, which produces an encrypted .enc file. The
+encrypted file is then passed to the email sender module, which transmits it via SMTP SSL to the
+receiver. The receiver uses the email receiver module to download the .enc file via IMAP, then passes
+it to the AES-256-CBC decryption engine along with the same secret key, which produces the restored
+original image.
+7.2 Use Case Diagram
+Represents user interaction with the system. The Sender actor interacts with five use cases: Select
+Image File, Enter or Generate Secret Key, Encrypt Image using AES-256, Configure Email Settings,
+and Send Encrypted File via SMTP. The Receiver actor interacts with two use cases: Download .enc
+Files via IMAP and Decrypt Image using AES-256.
+7.3 Class Diagram
+Displays the structure of the main class SecureImageTransferGUI with its attributes including root,
+selected_image_path, encrypted_file_path, key_var, sender_email_var, sender_pwd_var,
+receiver_email_var, progress, and status_label. Its methods include on_select_image, on_generate_key,
+on_copy_key, on_encrypt_image, on_send_email, on_check_email, on_decrypt_image, and
+on_save_email_settings. The class interacts with encryptor module containing encrypt_image and
+decrypt_image functions, key_manager module containing generate_key and hash_key functions,
+email_sender module containing send_email function, email_receiver module containing
+download_encrypted_files function, env_config module containing load_env and save_email_settings
+functions, and utils module containing setup_logging and is_valid_image functions.
+7.4 Sequence Diagram
+Shows the ordering of interactions for the encryption and sending flow. The Sender selects an image
+through the GUI. The GUI validates the image using utils. The Sender enters a key, which the GUI
+hashes via key_manager. The Sender clicks encrypt, and the GUI calls encryptor.encrypt_image which
+returns the .enc file path. The Sender clicks send, and the GUI calls email_sender.send_email which
+sends the encrypted file via SMTP SSL. The Receiver receives the email with the .enc attachment.
+7.5 Activity Diagram
+Shows the workflow from application launch to completion. The user launches the GUI app, selects an
+image file, validates it, enters or generates a secret key, encrypts the image using AES-256-CBC, saves
+the .enc file, optionally configures email settings and sends the encrypted file via SMTP, the receiver
+downloads the .enc file via IMAP, enters the same key, decrypts the image, and the original image is
+restored.
+7.6 Component Diagram
+Depicts how each component interacts within the system. The main.py entry point launches gui.py,
+which interacts with encryptor.py for encryption, decryptor.py for decryption, email_sender.py for
+SMTP sending, email_receiver.py for IMAP receiving, key_manager.py for key generation and
+hashing, env_config.py for .env file management, and utils.py for logging and validation. External
+dependencies include pycryptodome, Pillow, smtplib, and imaplib.
+7.7 ER Diagram
+Shows entities and their relationships. The User entity has attributes user_email, app_password, and
+role. The Image File entity has attributes file_path, file_name, file_extension, file_size, and is_valid.
+The Encrypted File entity has attributes enc_path, iv, ciphertext, original_ext, and magic_header. The
+Encryption Key entity has attributes key_hash, algorithm, key_size, mode, and derived_from. The
+Email Config entity has attributes sender_email, sender_password, receiver_email, smtp_server, and
+smtp_port. The User selects an Image File, the Image File encrypts to an Encrypted File, the Encrypted
+File uses an Encryption Key, and the Email Config sends the Encrypted File.
+8. Requirement Specification
+8.1 Functional Requirements
+The system must support image selection and validation for formats including PNG, JPG, JPEG, BMP,
+GIF, TIFF, and WEBP. It must encrypt images using AES-256-CBC with random IV and PKCS7
+padding. It must decrypt .enc files back to original images with lossless quality. It must generate
+cryptographically strong 256-bit keys in URL-safe Base64 format. It must derive AES-256 keys from
+passwords using SHA-256. It must send encrypted files via SMTP SSL with rich HTML email body. It
+must download .enc attachments from email inbox via IMAP. It must save and load email settings from
+a .env file. It must display encryption and decryption progress with a status bar. It must handle invalid
+files, wrong keys, and email errors gracefully. It must support copying generated keys to clipboard and
+toggling password field visibility.
+8.2 Software Requirements
+Python 3.8 or higher is required. The pycryptodome library is needed for AES encryption. The Pillow
+library is needed for image validation. NumPy is needed for numerical operations. Tkinter is built-in
+with Python and is used for the GUI framework. The smtplib module is built-in with Python for SMTP
+email. The imaplib module is built-in with Python for IMAP email. The hashlib module is built-in with
+Python for SHA-256 hashing. pip is used as the package manager for installing dependencies.
+8.3 Operating Systems Supported
+Windows 10 and Windows 11 are fully supported as the primary platform. macOS is fully supported.
+Linux distributions including Ubuntu and Fedora are fully supported. The application is cross-platform
+as it uses Python with Tkinter, which is available on all major operating systems.
+8.4 Technologies and Languages Used
+Python 3 is the primary programming language. AES-256 from pycryptodome is used for image
+encryption and decryption. SHA-256 from hashlib is used for password-to-key derivation. Tkinter with
+ttk is used for the graphical user interface. SMTP over SSL from smtplib is used for secure email
+sending. IMAP over SSL from imaplib is used for secure email receiving. Pillow is used for image file
+validation. The .env configuration format is used for persistent email settings storage.
+8.5 Hardware Requirements
+A dual-core CPU such as Intel i3 or equivalent is the minimum processor requirement. 4 GB RAM is
+the minimum with 8 GB recommended. 500 MB of disk space is needed for Python, libraries, and
+image processing. An internet connection is required for email functionality. A minimum display
+resolution of 1024 by 768 is needed. A keyboard and mouse are required for input.
+9. System Testing
+9.1 Types of Testing
+9.1.1 Unit Testing
+Individual modules were tested independently. The encryptor.py module was tested for encryption and
+decryption of various image formats including PNG, JPG, BMP, GIF, and TIFF with different key
+lengths. The PKCS7 padding and unpadding logic was verified with edge cases. The key_manager.py
+module was tested for key generation randomness and format correctness, and SHA-256 hashing was
+verified to produce consistent deterministic 32-byte outputs. The email_sender.py module was tested
+for email body construction with various filenames and file sizes. The env_config.py module was tested
+for .env file parsing with comments, quoted values, special characters, and edge cases. The utils.py
+module was tested for image validation with valid images, corrupted files, and non-image files.
+9.1.2 Integration Testing
+Modules were tested together to verify seamless interaction. The encryption to email sending pipeline
+was tested. The email receiving to decryption pipeline was tested. The GUI to encryption and
+decryption to status updates pipeline was tested. Key generation to key hashing to encryption to
+decryption consistency was verified.
+9.1.3 Functional Testing
+Each feature was tested for correct behavior. Image selection and validation was verified. Encryption
+was confirmed to produce valid .enc files. Decryption with the correct key was verified to restore the
+original image. Decryption with the wrong key was confirmed to produce an appropriate error message.
+Email sending was verified to successfully transmit the encrypted file. Email receiving was confirmed
+to correctly download .enc attachments.
+9.1.4 System Testing
+The complete application was tested end-to-end covering the full workflow from selecting an image
+through generating a key, encrypting, configuring email, sending, receiving, and finally decrypting.
+Testing was done with various image sizes from small thumbnails to large high-resolution images,
+different image formats, and under different network conditions.
+9.1.5 White Box Testing
+Internal code paths were thoroughly examined. All branches in encryption and decryption logic were
+tested including valid data, corrupted data, and empty data scenarios. PKCS7 padding edge cases were
+tested for data exactly divisible by the block size. MIME filename decoding with various encodings was
+verified. The .env file parsing with malformed inputs was tested. Error handling paths in all modules
+were exercised.
+9.1.6 Black Box Testing
+The system was tested from the user's perspective without knowledge of internal implementation.
+Users attempted to encrypt and decrypt images using only the GUI. Various invalid inputs were
+provided including non-image files, empty keys, and invalid email addresses. The system's response to
+each input was verified against expected behavior.
+9.2 Test Strategy and Approach
+9.2.1 Test Objectives
+The test objectives were to verify that AES-256 encryption correctly transforms image data into
+unreadable ciphertext, that decryption with the correct key produces a bit-identical copy of the original
+image, that decryption with an incorrect key fails gracefully with an informative error message, that
+email sending and receiving work correctly, that the GUI remains responsive during heavy operations,
+and that all error conditions are handled gracefully with user-friendly messages.
+9.2.2 Features to be Tested
+Features tested include image file selection and validation, AES-256-CBC encryption and decryption,
+PKCS7 padding and unpadding, SHA-256 key derivation, cryptographically random key generation,
+email configuration save and load, SMTP email sending with attachment, IMAP email receiving and
+attachment download, GUI responsiveness and thread safety, progress bar and status updates, clipboard
+operations, password visibility toggle, and error handling for all failure scenarios.
+9.3 Integration Testing
+9.3.1 Test Results
+Encrypting a PNG image with a valid key produced the expected .enc file and passed. Encrypting a JPG
+image with a valid key produced the expected .enc file and passed. Decrypting with the correct key
+restored the original image and passed. Decrypting with the wrong key displayed a decryption failed
+error message and passed. Lossless verification confirmed that original and decrypted files are
+byte-identical and passed. Sending an encrypted file via email was successful and passed. Receiving
+.enc attachments via IMAP downloaded the file to the downloads folder and passed. Generating a
+strong key produced a 44-character Base64 key and passed. Selecting an invalid file such as a text file
+showed an invalid image error and passed. Attempting encryption with an empty key showed a missing
+key error and passed.
+9.4 Acceptance Testing
+9.4.1 Test Results
+The system was accepted on all criteria. Users can encrypt any supported image format. Decrypted
+images are identical to originals confirming lossless operation. Encrypted files cannot be viewed
+without the key. Email sending works with Gmail SMTP. Email receiving downloads .enc attachments
+correctly. The GUI is intuitive and visually appealing with its dark mode theme. Error messages are
+clear and helpful. The application works on Windows, macOS, and Linux. Progress indicators provide
+real-time feedback. Key generation produces cryptographically strong keys.
+9.5 Execution
+The system was executed and tested in the following environments. Windows 11 with Python 3.10 and
+above was used for primary testing with full GUI functionality verified. macOS with Python 3.9 and
+above confirmed cross-platform compatibility. Ubuntu 22.04 with Python 3.10 and above confirmed
+Linux compatibility. All test cases passed successfully with zero critical defects.
+10. Conclusion
+The project Secure Image Transfer System Using AES-256 Encryption successfully demonstrates how
+AES-256 encryption, combined with secure email transmission protocols, can be effectively
+implemented to protect digital images during transfer and storage. The system ensures that sensitive
+image data remains completely confidential, even if intercepted during email transmission. The
+Python-based approach provides excellent flexibility, cross-platform compatibility, and ease of use.
+With AES-256-CBC encryption, PKCS7 padding, SHA-256 key derivation, and lossless byte-level
+encryption, users can confidently protect their visual data from unauthorized access. The modern
+dark-mode GUI built with Tkinter provides an intuitive and visually appealing interface, while the
+integrated SMTP and IMAP email functionality enables seamless secure image sharing. The system can
+be further extended to include hybrid encryption using AES and RSA, cloud storage integration for
+platforms like Google Drive and AWS S3, a companion mobile application, a file transfer history
+dashboard, automatic key exchange using Diffie-Hellman, multi-file batch encryption support, and
+digital signatures for verifying sender authenticity and data integrity.

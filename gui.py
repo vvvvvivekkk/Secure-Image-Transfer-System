@@ -530,21 +530,18 @@ class SecureImageTransferGUI:
         threading.Thread(target=task, daemon=True).start()
 
     def on_decrypt_image(self) -> None:
-        # Use the same key field as encryption for consistency.
-        # If the key field is empty, fall back to a popup dialog.
-        secret = self.key_var.get().strip()
-        if not secret:
-            secret = simpledialog.askstring(
-                "Secret Key Required",
-                "The key field is empty.\n"
-                "Enter the same key / passphrase used to encrypt the file:",
-                show="•",
-                parent=self.root,
-            )
-            if secret is None:
-                self._set_status("Decryption cancelled.", 0)
-                return
-            secret = secret.strip()
+        # Always ask for the decryption key via a popup dialog.
+        # The key must be entered manually by the user for security.
+        secret = simpledialog.askstring(
+            "Decryption Key Required",
+            "Enter the key / passphrase used to encrypt the file:",
+            show="•",
+            parent=self.root,
+        )
+        if secret is None:
+            self._set_status("Decryption cancelled.", 0)
+            return
+        secret = secret.strip()
         if not secret:
             messagebox.showerror(
                 "Missing Key",
